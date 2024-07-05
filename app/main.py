@@ -44,21 +44,26 @@ def fetch_vacancies(specialization: str, db: Session = Depends(get_db)):
 
 @app.get("/vacancies", response_model=schemas.VacanciesResponse)
 def get_vacancies(
-    specialization: str,
+    specialization: Optional[str] = None,
     db: Session = Depends(get_db),
     page: int = 1,
     page_size: int = 10,
     min_salary: Optional[int] = None,
     max_salary: Optional[int] = None,
+    currency: Optional[str] = None,
     sort_by_salary: Optional[str] = None,
     search_name: Optional[str] = None,
 ):
-    query = db.query(models.Vacancy).filter(models.Vacancy.specialization == specialization)
+    query = db.query(models.Vacancy)
 
+    if specialization:
+        query = query.filter(models.Vacancy.specialization == specialization)
     if min_salary is not None:
         query = query.filter(models.Vacancy.salary_from >= min_salary)
     if max_salary is not None:
         query = query.filter(models.Vacancy.salary_to <= max_salary)
+    if currency:
+        query = query.filter(models.Vacancy.currency == currency)
     if search_name:
         query = query.filter(models.Vacancy.name.ilike(f"%{search_name}%"))
     if sort_by_salary:
