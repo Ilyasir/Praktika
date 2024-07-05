@@ -1,7 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel
-from typing import Optional
-from typing import List
+from typing import Optional, List
 
 class VacancyBase(BaseModel):
     id: str
