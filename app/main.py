@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, Query
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, asc, desc
 import requests
@@ -10,6 +11,8 @@ from .database import SessionLocal, engine, get_db
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 
 @app.post("/fetch_vacancies")
 def fetch_vacancies(specialization: str, db: Session = Depends(get_db)):

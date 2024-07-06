@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вакансии</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Вакансии</h1>
+        <div class="form-group">
+            <input type="text" id="specialization" placeholder="Введите специализацию" class="form-control" oninput="fetchSpecializations()">
+            <div id="specialization-list" class="dropdown-list"></div>
+            <button onclick="fetchAndParseVacancies()" class="btn btn-primary">Загрузить вакансии</button>
+            <button onclick="clearDatabase()" class="btn btn-danger">Очистить БД</button>
+        </div>
+        <div class="form-group">
+            <input type="text" id="search" placeholder="Поиск по названию" class="form-control">
+            <select id="currency" class="form-control">
+                <option value="">Все валюты</option>
+                <option value="RUR">RUR</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="BYR">BYR</option>
+                <option value="UZS">UZS</option>
+                <!-- Добавьте другие валюты по мере необходимости -->
+            </select>
+            <input type="number" id="min_salary" placeholder="Минимальная зарплата" class="form-control">
+            <input type="number" id="max_salary" placeholder="Максимальная зарплата" class="form-control">
+            <select id="sort_by_salary" class="form-control">
+                <option value="">Сортировать по зарплате</option>
+                <option value="asc">По возрастанию</option>
+                <option value="desc">По убыванию</option>
+            </select>
+            <button onclick="fetchVacancies()" class="btn btn-secondary">Поиск</button>
+        </div>
+        <div class="pagination">
+            <button onclick="previousPage()" class="btn btn-secondary">Назад</button>
+            <div id="page-numbers-top"></div>
+            <button onclick="nextPage()" class="btn btn-secondary">Вперед</button>
+        </div>
+        <div id="loader" class="loader"></div>
+        <div id="vacancies"></div>
+        <div class="pagination">
+            <button onclick="previousPage()" class="btn btn-secondary">Назад</button>
+            <div id="page-numbers-bottom"></div>
+            <button onclick="nextPage()" class="btn btn-secondary">Вперед</button>
+            <p id="page-info"></p>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
