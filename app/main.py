@@ -44,15 +44,15 @@ def fetch_vacancies(specialization: str, db: Session = Depends(get_db)):
 
 @app.get("/vacancies", response_model=schemas.VacanciesResponse)
 def get_vacancies(
-    db: Session = Depends(get_db),
     specialization: Optional[str] = None,
+    db: Session = Depends(get_db),
     page: int = 1,
     page_size: int = 10,
-    min_salary: Optional[int] = None,
-    max_salary: Optional[int] = None,
-    sort_by_salary: Optional[str] = None,
-    search_name: Optional[str] = None,
-    currency: Optional[str] = None,
+    min_salary: Optional[int] = Query(None),
+    max_salary: Optional[int] = Query(None),
+    currency: Optional[str] = Query(None),
+    sort_by_salary: Optional[str] = Query(None),
+    search_name: Optional[str] = Query(None),
 ):
     query = db.query(models.Vacancy)
 
@@ -62,10 +62,10 @@ def get_vacancies(
         query = query.filter(models.Vacancy.salary_from >= min_salary)
     if max_salary is not None:
         query = query.filter(models.Vacancy.salary_to <= max_salary)
-    if search_name:
-        query = query.filter(models.Vacancy.name.ilike(f"%{search_name}%"))
     if currency:
         query = query.filter(models.Vacancy.currency == currency)
+    if search_name:
+        query = query.filter(models.Vacancy.name.ilike(f"%{search_name}%"))
     if sort_by_salary:
         if sort_by_salary.lower() == "asc":
             query = query.order_by(asc(models.Vacancy.salary_from))
@@ -83,7 +83,7 @@ def get_vacancies(
     }
 
 @app.get("/specializations")
-def get_specializations():
+def get_specializations(query: str):
     url = "https://api.hh.ru/specializations"
     response = requests.get(url)
     data = response.json()
@@ -91,6 +91,13 @@ def get_specializations():
     specializations = []
     for item in data:
         for sub_item in item["specializations"]:
-            specializations.append(sub_item["name"])
+            if query.lower() in sub_item["name"].lower():
+                specializations.append(sub_item["name"])
 
     return specializations
+
+@app.post("/clear_database")
+def clear_database(db: Session = Depends(get_db)):
+    db.query(models.Vacancy).delete()
+    db.commit()
+    return {"status": "Database cleared successfully"}
